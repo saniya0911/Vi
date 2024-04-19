@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Dashboard</title>
+        <!--Bootstrap-->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+        <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+        <link rel="canonical" href="https://getbootstrap.com/docs/5.3/examples/dashboard/">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@docsearch/css@3">
+        <!--chart.js-->
+        <script src="https://cdnjs.com/libraries/Chart.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+        </head>
+    <body>
+            <div class="container-fluid" style="background: DarkSlateGrey">
+                <a class="navbar-brand navbar navbar-dark" href="/"><h2>Dashboard</h2></a>
+            </div>
+            <div class="row container-fluid">
+                <!-- Sidebar with Filters -->
+                <div class="col-md-3" style="background: DarkSlateGrey">
+                  <div class="card">
+                    <div class="card-body">
+                      <form method="get" action="">
+                        <div class="form-group">
+                          <label for="sector">Sector:</label>
+                          <select id="sector" name="sector" class="form-control">
+                            <option value="Select">Select</option>
+                            {% for e in context.form.sector %}
+                                <option value="{{ e|safe }}">{{ e }}</option>
+                            {% endfor %}
+                          </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="pestle">Pestle:</label>
+                            <select id="pestle" name="pestle" class="form-control">
+                              <option value="Select">Select</option>
+                              {% for e in context.form.pestle %}
+                                <option value="{{e|safe}}">{{e}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="end_year">End Year:</label>
+                            <select id="end_year" name="end_year" class="form-control">
+                              <option value="Select">Select</option>
+                              {% for e in context.form.end_year %}
+                                <option value="{{e}}">{{e}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="topic">Topics:</label>
+                            <select id="topic" name="topic" class="form-control">
+                              <option value="Select">Select</option>
+                              {% for e in context.form.topic %}
+                                <option value="{{e|safe}}">{{e}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="region">Region:</label>
+                            <select id="region" name="region" class="form-control">
+                              <option value="Select">Select</option>
+                              {% for e in context.form.region %}
+                                <option value="{{e|safe}}">{{e}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="source">Source:</label>
+                            <select id="source" name="source" class="form-control">
+                              <option value="Select">Select</option>
+                              {% for e in context.form.source %}
+                                <option value="{{e|safe}}">{{e}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="country">Country:</label>
+                            <select id="country" name="country" class="form-control">
+                              <option value="Select">Select</option>
+                              {% for e in context.form.country %}
+                                <option value="{{e|safe}}">{{e}}</option>
+                              {% endfor %}
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Apply Filters</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+                
+                <!-- Main content -->
+                <div class="col-md-9" >
+                    <div style="border: 1px outset grey ; margin:8px;width:100%; height:400px;">
+                      <h3 class="card-title text-primary">Year</h3>
+                      <canvas id="year", style="width:1100px; height:300px;"></canvas>
+                    </div>
+
+                    <div style="display: flex; justify-content: space-between;">
+                        <div class="col-md-6" style="border: 1px outset grey; margin: 8px; width: 48%; height: 400px;">
+                            <canvas id="intensity" style="width: 100%; height: auto;"></canvas>
+                        </div> 
+
+                        <div class="col-md-6" style="border: 1px outset grey ; margin:8px; width: 480px;height:300px;">
+                            <h3 class="card-title text-primary">Regions</h3>
+                            <canvas id="region_chart", style="width:auto; height:auto"></canvas>
+                        </div>
+                    </div>
+
+                    <div style="display: inline-flex;">
+                        <div class="col-md-6"  style="border: 1px outset grey ; margin:8px;width:450px; height:350px">
+                            <h3 class="card-title text-primary">Likelihood</h3>
+                            <canvas id="likelihood", style="width:auto;"></canvas>
+                        </div>
+                
+                        <div class="col-md-6"  style="border: 1px outset grey ; margin:8px;width:480px; height:350px">
+                            <h3 class="card-title text-primary">Relevance</h3>
+                            <canvas id="relevance", style="width:auto;"></canvas>
+                        </div>
+                    </div>
+
+                    <div style="display: inline-flex;">
+                        <div class="col-md-6"  style="border: 1px outset grey ; margin:8px;width:450px; height:500px">
+                            <h3 class="card-title text-primary">Countries</h3>
+            
+                            <canvas id="country_chart2", style="width:auto; height:auto; padding: 2px"></canvas>
+                        </div>
+                
+                        <div class="col-md-6"  style="border: 1px outset grey ; margin:8px;width:480px; height:450px">
+                            <h3 class="card-title text-primary">Topics</h3>
+                            <canvas id="topic_chart", style="width: 800px; height: 700px;"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+    </body>
+
+    <script>
+        var ctx = document.getElementById('year').getContext('2d');
+        var year = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ context.data.year.end_year.labels|safe }},
+                datasets: [{
+                    label: 'Start Year',
+                    backgroundColor: 'rgba(255, 99, 132, 1)', // Red
+                    borderColor: 'rgba(255, 99, 132, 1)',
+                    borderWidth: 1,
+                    data: {{ context.data.year.start_year.data|safe }}
+                }, {
+                    label: 'End Year',
+                    backgroundColor: 'rgba(54, 162, 235, 1)', // Blue
+                    borderColor: 'rgba(54, 162, 235, 1)',
+                    borderWidth: 1,
+                    data: {{ context.data.year.end_year.data|safe }}
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: false
+                        }
+                    }]
+                }
+            },
+        });
+    </script>
+
+    <script>
+      // Prepare data
+      var data = {
+        labels: {{ context.data.topic.labels|safe }},
+      datasets: [{
+        label: 'Topics',
+        backgroundColor: 'rgba(54, 162, 235, 1)',
+        borderColor: 'rgb(54, 162, 235)',
+        borderWidth: 0.5,
+        data: {{ context.data.topic.data|safe }},
+        }]
+     };
+      var config = {
+        type: 'bar',
+        data: data,
+        options: {
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+     };
+
+      // Create the chart
+      var topic_chart = new Chart(
+        document.getElementById('topic_chart'),
+        config
+     );
+    </script>
+
+    <script>
+        var ctx = document.getElementById('country_chart2').getContext('2d');
+        var graphDataset = {
+            labels: {{ context.data.country.labels|safe }},
+            datasets: [{
+                label: 'Countries',
+                data: {{ context.data.country.data|safe }},
+                backgroundColor: [
+                    'rgba(128, 128, 255, 0.5)',
+                    'rgba(223, 128, 255, 0.5)',
+                    'rgba(255, 128, 128, 0.5)',
+                    'rgba(199, 83, 58, 0.5)',
+                    'rgba(58, 199, 154, 0.5)',
+                    'rgba(58, 199, 83, 0.5)',
+                    'rgba(199, 187, 58, 0.5)',
+                    'rgba(255, 87, 51, 0.5)',
+                    'rgba(255, 195, 0, 0.5)',
+                    'rgba(58, 140, 199, 0.5)',
+                    'rgba(199, 58, 181, 0.5)',
+                    'rgba(25, 25, 112, 0.5)',
+                    'rgba(46, 34, 36, 0.5)',
+                    'rgba(204, 119, 34, 0.5)',
+                    'rgba(124, 48, 48, 0.5)',
+                    'rgba(2, 48, 32, 0.5)',
+                    'rgba(128, 128, 0, 0.5)',
+                    'rgba(46, 139, 87, 0.7)',
+                    'rgba(248, 131, 121, 0.5)',
+                    'rgba(124, 48, 48, 1)',
+                    'rgba(204, 119, 34, 0.7)',
+                    'rgba(255, 87, 51, 0.7)',
+                    'rgba(46, 34, 36, 0.7)'
+                ],
+                borderWidth: 0,
+            }]
+        };
+        if (graphDataset.labels.length === 0 || graphDataset.datasets[0].data.length === 0) {
+            ctx.font = '24px Arial';
+            ctx.filStyle = 'black';
+            ctx.fillText("Oops! No data found.",80,130);
+        } else {
+            var myDonutChart = new Chart(ctx, {
+                type: 'pie',
+                data: graphDataset,
+                options: {
+                    // Add any custom options here
+                }
+            });
+        }
+    </script>
+
+    <script>
+        var ctx = document.getElementById('likelihood').getContext('2d');
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ context.data.likelihood.labels|safe }},
+                datasets: [{
+                    label: 'Likelihood',
+                    data: {{ context.data.likelihood.data|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 1)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+
+    <script>
+        var ctx = document.getElementById('relevance').getContext('2d');
+        var myLineChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: {{ context.data.relevance.labels|safe }},
+                datasets: [{
+                    label: 'Relevance',
+                    data: {{ context.data.relevance.data|safe }},
+                    backgroundColor: 'rgba(54, 162, 235, 1)',
+                    borderColor: 'rgb(54, 162, 235)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
+                    }]
+                }
+            }
+        });
+    </script>
+
+    <script>
+        var ctx = document.getElementById('intensity').getContext('2d');
+        var graphDataset = {
+            labels: {{ context.data.intensity.labels|safe }},
+            datasets: [{
+                label: 'Intensity',
+                data: {{ context.data.intensity.data|safe }},
+                backgroundColor: [
+                    'rgba(128, 128, 255, 0.5)',
+                    'rgba(223, 128, 255, 0.5)',
+                    'rgba(255, 128, 128, 0.5)',
+                    'rgba(199, 83, 58, 0.5)',
+                    'rgba(58, 199, 154, 0.5)',
+                    'rgba(58, 199, 83, 0.5)',
+                    'rgba(199, 187, 58, 0.5)',
+                    'rgba(255, 87, 51, 0.5)',
+                    'rgba(255, 195, 0, 0.5)',
+                    'rgba(58, 140, 199, 0.5)',
+                    'rgba(199, 58, 181, 0.5)',
+                    'rgba(25, 25, 112, 0.5)',
+                    'rgba(46, 34, 36, 0.5)',
+                    'rgba(204, 119, 34, 0.5)',
+                    'rgba(124, 48, 48, 0.5)',
+                    'rgba(2, 48, 32, 0.5)',
+                    'rgba(128, 128, 0, 0.5)',
+                    'rgba(46, 139, 87, 0.7)',
+                    'rgba(248, 131, 121, 0.5)',
+                    'rgba(124, 48, 48, 1)',
+                    'rgba(204, 119, 34, 0.7)',
+                    'rgba(255, 87, 51, 0.7)',
+                    'rgba(46, 34, 36, 0.7)',
+                    'rgba(58, 199, 154, 0.9)',
+                ],
+                borderWidth: 0,
+            }]
+        };
+        if (graphDataset.labels.length === 0 || graphDataset.datasets[0].data.length === 0) {
+            ctx.font = '20px Arial';
+            ctx.filStyle = 'black';
+            ctx.fillText("Oops! No data found.",80,100);
+        } else {
+            var intensity = new Chart(ctx, {
+                type: 'pie',
+                data: graphDataset,
+                options: {
+                    // Add any custom options here
+                }
+            });
+        }
+    </script>
+
+    <script>
+              // Prepare data
+              var response_data = {
+                labels: {{ context.data.region.labels|safe }},
+            datasets: [{
+                label: 'Regions',
+                backgroundColor: 'rgba(54, 162, 235, 0.5)',
+                borderColor: 'rgb(54, 162, 235)',
+                borderWidth: 0.5,
+                data: {{ context.data.region.data|safe }},
+            }]
+        };
+        // Configuration options
+        var config = {
+            type: 'bar',
+            data: response_data,
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        // Create the chart
+        var chart = new Chart(
+            document.getElementById('region_chart'),
+            config
+        );
+    </script>
+    
+</html>
